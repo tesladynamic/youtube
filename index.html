@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Tesla YouTube Client</title>
+<title>Tesla YouTube Bypass</title>
 
 <style>
 * {
@@ -223,8 +223,8 @@ iframe {
     </div>
   </div>
 
-  <div class="player">
-    <iframe id="player" src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&playsinline=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  <div class="player" id="player-container">
+    <iframe id="player" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
   </div>
 </div>
 
@@ -331,14 +331,22 @@ function playVideo(videoObj) {
   const videoId = videoObj.videoId || videoObj.id?.videoId;
   if (!videoId) return;
 
-  const playerIframe = document.getElementById("player");
-  // playsinline parametresi mobil ve Tesla tarayıcılarında oynatmayı kararlaştırır
-  playerIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&playsinline=1&enablejsapi=1`;
+  const playerContainer = document.getElementById("player-container");
+  
+  // Tesla tarayıcısının hareket sensörünü ve iframe element engellemesini 
+  // DOM elementini yeniden oluşturarak (re-inject) bypass ediyoruz.
+  playerContainer.innerHTML = `
+    <iframe id="player" 
+      src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&playsinline=1&enablejsapi=1&controls=1&modestbranding=1" 
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+      allowfullscreen>
+    3</iframe>
+  `;
 
   watchHistory = watchHistory.filter(item => (item.videoId || item.id?.videoId) !== videoId);
   watchHistory.unshift(videoObj);
   if (watchHistory.length > 20) watchHistory.pop();
-  localStorage.setItem("yt_watch_history", JSON.stringify(watchHistory));
+  localStorage.setItem("yt_search_history", JSON.stringify(watchHistory));
 }
 
 function renderWatchHistory() {
