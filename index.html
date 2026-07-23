@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Tesla YouTube Client - Optimize</title>
+<title>YouTube Mini Client - Tesla Uyumlu</title>
 
 <style>
 * {
@@ -75,6 +75,10 @@ button {
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
+}
+
+button:hover {
+  background: #ef4444;
 }
 
 #suggestions {
@@ -248,8 +252,7 @@ iframe {
 </div>
 
 <script>
-const API_KEY = "AIzaSyАМb6gkk8f7m7nbAFZQXeTMi
-Zs0qSZcqbM"; // Kendi API anahtarınızı buraya yazın
+const API_KEY = "AIzaSyАМb6gkk8f7m7nbAFZQXeTMiZs0qSZcqbM"; // Kendi çalışan API anahtarınızı buraya ekleyin
 
 let currentResults = [];
 let watchHistory = JSON.parse(localStorage.getItem("yt_watch_history")) || [];
@@ -301,7 +304,7 @@ async function searchVideos(customQuery) {
     const data = await res.json();
 
     if (!data.items || data.items.length === 0) {
-      alert("Oynatılabilir video bulunamadı.");
+      alert("Oynatılabilir video bulunamadı veya API anahtarı sınırına takıldı.");
       return;
     }
 
@@ -323,6 +326,8 @@ function renderVideoList(items, containerId) {
 
   items.forEach(video => {
     const videoId = video.id?.videoId || video.videoId;
+    if (!videoId) return;
+    
     const title = decodeHTMLEntities(video.snippet.title);
     const channel = decodeHTMLEntities(video.snippet.channelTitle);
     const thumb = video.snippet.thumbnails.medium.url;
@@ -353,9 +358,6 @@ function playVideo(videoObj) {
   if (!videoId) return;
 
   const playerContainer = document.getElementById("player-container");
-  
-  // Sefirox mantığına benzer şekilde iframe her tıklamada DOM'a yeniden sıfırdan enjekte edilir.
-  // Bu sayede Tesla tarayıcısının hareket sensörü kilidi bypass edilir.
   playerContainer.innerHTML = `
     <iframe id="player" 
       src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&playsinline=1&enablejsapi=1&controls=1" 
@@ -429,7 +431,7 @@ async function showSuggestionsDropdown(q) {
         });
       }
     } catch (err) {
-      console.log("Öneri hatası", err);
+      console.log("Öneri yüklenemedi", err);
     }
   }
 
@@ -451,4 +453,4 @@ document.addEventListener("click", e => {
 </script>
 
 </body>
-</html>
+</html
