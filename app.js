@@ -1,41 +1,57 @@
-const videos = [
+// İstediğin YouTube videolarını buraya ekleyebilirsin
+const playlist = [
     {
-        title: "Lofi Girl - Relaxing Beats to Study/Code to",
-        videoId: "jfKfPfyJRdk",
-        thumbnail: "https://img.youtube.com/vi/jfKfPfyJRdk/hqdefault.jpg"
+        title: "Lofi Girl - Relaxing Beats",
+        id: "jfKfPfyJRdk",
+        thumb: "https://img.youtube.com/vi/jfKfPfyJRdk/hqdefault.jpg"
     },
     {
-        title: "Synthwave Radio - Chill Synth / Retro Beats",
-        videoId: "4xDzrJKXOOY",
-        thumbnail: "https://img.youtube.com/vi/4xDzrJKXOOY/hqdefault.jpg"
+        title: "Synthwave Radio - Chill Beats",
+        id: "4xDzrJKXOOY",
+        thumb: "https://img.youtube.com/vi/4xDzrJKXOOY/hqdefault.jpg"
+    },
+    {
+        title: "Classical Piano Music",
+        id: "4Tr0otuiQuU",
+        thumb: "https://img.youtube.com/vi/4Tr0otuiQuU/hqdefault.jpg"
     }
 ];
 
 const videoListEl = document.getElementById('videoList');
-const youtubePlayer = document.getElementById('youtubePlayer');
+const ytPlayer = document.getElementById('ytPlayer');
 const videoTitleEl = document.getElementById('videoTitle');
 
-function renderVideoList() {
+function init() {
     videoListEl.innerHTML = '';
     
-    videos.forEach((video) => {
-        const card = document.createElement('div');
-        card.classList.add('video-card');
+    playlist.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'video-item';
+        if (index === 0) div.classList.add('active');
 
-        card.innerHTML = `
-            <img src="${video.thumbnail}" alt="${video.title}" class="video-thumbnail">
-            <div class="video-info">
-                <h4>${video.title}</h4>
-            </div>
+        div.innerHTML = `
+            <img src="${item.thumb}" alt="${item.title}">
+            <span>${item.title}</span>
         `;
 
-        card.addEventListener('click', () => {
-            // Tesla tarayıcısının engeline takılmamak için doğrudan YouTube linkini açar
-            window.open(`https://www.youtube.com/watch?v=${video.videoId}`, '_blank');
+        div.addEventListener('click', () => {
+            // Aktif sınıfını değiştir
+            document.querySelectorAll('.video-item').forEach(el => el.classList.remove('active'));
+            div.classList.add('active');
+
+            // Tıklanan videoyu YÖNLENDirmeden doğrudan sayfa içindeki iframe'e yükle ve oynat
+            ytPlayer.src = `https://www.youtube.com/embed/${item.id}?autoplay=1`;
+            videoTitleEl.textContent = item.title;
         });
 
-        videoListEl.appendChild(card);
+        videoListEl.appendChild(div);
     });
+
+    // İlk açılışta ilk videoyu yükle
+    if (playlist.length > 0) {
+        ytPlayer.src = `https://www.youtube.com/embed/${playlist[0].id}?autoplay=1`;
+        videoTitleEl.textContent = playlist[0].title;
+    }
 }
 
-renderVideoList();
+init();
