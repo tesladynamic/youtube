@@ -2,579 +2,451 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>VoltSound - BMW IconicSounds EV Edition</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Tesla YouTube Client - Optimize</title>
 
 <style>
-body{
-    margin:0;
-    background:#000;
-    color:#fafafa;
-    font-family: 'Orbitron', sans-serif;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    overflow:hidden;
-    touch-action: none;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }
 
-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
+body {
+  background: #030712;
+  color: white;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-.aurora-glow {
-    position: fixed;
-    bottom: -100px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 120vw;
-    height: 300px;
-    background: radial-gradient(ellipse at bottom, rgba(56, 189, 248, 0.25) 0%, rgba(14, 165, 233, 0.08) 40%, transparent 70%);
-    filter: blur(50px);
-    pointer-events: none;
-    z-index: 1;
-    animation: auroraPulse 6s ease-in-out infinite alternate;
+header {
+  padding: 12px 20px;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  background: #030712;
+  z-index: 10;
 }
 
-@keyframes auroraPulse {
-    0% { opacity: 0.5; transform: translateX(-50%) scale(0.95); }
-    100% { opacity: 0.9; transform: translateX(-50%) scale(1.05); }
+.logo {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ff0000;
+  cursor: pointer;
 }
 
-.container{
-    text-align:center;
-    background:rgba(10, 10, 15, 0.75);
-    border: 1px solid rgba(56, 189, 248, 0.3);
-    padding: 40px 60px;
-    border-radius: 32px;
-    box-shadow: 0 0 50px rgba(56, 189, 248, 0.15);
-    backdrop-filter: blur(16px);
-    z-index: 2;
-    position: relative;
-    width: 280px;
-    height: 160px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
+.search {
+  position: relative;
+  flex: 1;
+  max-width: 600px;
+  display: flex;
+  gap: 10px;
 }
 
-.slider-wrapper {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+input {
+  flex: 1;
+  height: 44px;
+  background: #111827;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 22px;
+  padding: 0 20px;
+  font-size: 16px;
+  color: white;
+  outline: none;
 }
 
-.panel {
-    position: absolute;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.8s ease;
+input:focus {
+  border-color: #ef4444;
 }
 
-#startPanel { transform: scale(1); opacity: 1; }
-#startPanel.zoom-out { transform: scale(0.5); opacity: 0; pointer-events: none; }
-
-#metricPanel { transform: scale(1.5); opacity: 0; pointer-events: none; }
-#metricPanel.zoom-in { transform: scale(1); opacity: 1; pointer-events: auto; }
-
-#status{
-    margin-bottom: 15px;
-    padding: 8px 16px;
-    background: rgba(56, 189, 248, 0.15);
-    color: #38bdf8;
-    border-radius: 20px;
-    display: inline-block;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+button {
+  height: 44px;
+  padding: 0 20px;
+  border: none;
+  border-radius: 22px;
+  background: #dc2626;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-#metricPanel.zoom-in #status { opacity: 1; transform: translateY(0); }
-
-button{
-    padding: 16px 36px;
-    font-size: 16px;
-    font-weight: 800;
-    font-family: 'Orbitron', sans-serif;
-    color: #000;
-    background: #38bdf8;
-    border: none;
-    border-radius: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 30px rgba(56, 189, 248, 0.5);
-    letter-spacing: 1.5px;
+#suggestions {
+  position: absolute;
+  top: 50px;
+  left: 0;
+  right: 0;
+  background: #1f2937;
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 9999;
+  display: none;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
 }
 
-button:hover { background: #7dd3fc; box-shadow: 0 0 45px rgba(56, 189, 248, 0.8); transform: scale(1.05); }
-
-button.stop-btn {
-    background: rgba(185, 28, 28, 0.25);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(239, 68, 68, 0.4);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37), inset 0 1px 1px rgba(255, 255, 255, 0.2);
-    color: #fca5a5;
-    font-size: 14px;
-    padding: 10px 24px;
-    margin-top: 6px;
-}
-button.stop-btn:hover {
-    background: rgba(220, 38, 38, 0.4);
-    border-color: rgba(248, 113, 113, 0.7);
-    box-shadow: 0 8px 32px rgba(220, 38, 38, 0.2), inset 0 1px 2px rgba(255, 255, 255, 0.4);
-    color: #fff;
-    transform: scale(1.05);
+.suggestion-section-title {
+  padding: 8px 16px;
+  font-size: 11px;
+  color: #9ca3af;
+  background: #111827;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
-.throttle-bar {
-    position: fixed;
-    right: 30px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 24px;
-    height: 220px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(56, 189, 248, 0.25);
-    border-radius: 12px;
-    backdrop-filter: blur(8px);
-    z-index: 10;
-    cursor: pointer;
-    overflow: hidden;
-    display: none;
+.suggestion {
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
 }
-.throttle-bar.active { display: block; }
-.throttle-fill {
-    position: absolute; bottom: 0; left: 0; width: 100%; height: 0%;
-    background: linear-gradient(to top, rgba(56, 189, 248, 0.4), rgba(56, 189, 248, 0.9));
-    border-radius: 0 0 12px 12px;
-    transition: height 0.05s linear;
+
+.suggestion:hover {
+  background: #374151;
 }
-.throttle-thumb {
-    position: absolute; bottom: 0%; left: 50%; transform: translateX(-50%);
-    width: 36px; height: 18px; background: #38bdf8; border-radius: 9px;
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.8);
-    pointer-events: none;
-    transition: bottom 0.05s linear;
+
+.main {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
 }
-.throttle-label {
-    position: fixed; right: 20px; top: calc(50% - 135px);
-    font-size: 9px; color: rgba(56, 189, 248, 0.7); letter-spacing: 1px;
-    text-align: center; width: 45px; z-index: 10; display: none;
+
+.sidebar {
+  width: 380px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(255,255,255,0.1);
+  background: #030712;
 }
-.throttle-label.active { display: block; }
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.tab {
+  flex: 1;
+  padding: 12px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #9ca3af;
+  background: #111827;
+}
+
+.tab.active {
+  color: white;
+  background: #030712;
+  border-bottom: 2px solid #dc2626;
+}
+
+.results-container {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.video-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  align-items: center;
+  transition: background 0.2s;
+}
+
+.video-item:hover {
+  background: #1f2937;
+}
+
+.video-item img {
+  width: 130px;
+  height: 74px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.video-info {
+  flex: 1;
+  font-size: 13px;
+  line-height: 1.4;
+  overflow: hidden;
+}
+
+.video-title {
+  font-weight: 600;
+  color: #f3f4f6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.channel-title {
+  color: #9ca3af;
+  margin-top: 4px;
+  font-size: 11px;
+}
+
+.player {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  position: relative;
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
 </style>
 </head>
 <body>
 
-<canvas id="waveCanvas"></canvas>
-<div class="aurora-glow"></div>
+<header>
+  <div class="logo" onclick="location.reload()">YouTube</div>
+  <div class="search">
+    <input id="query" placeholder="YouTube'da ara..." autocomplete="off">
+    <button onclick="searchVideos()">Ara</button>
+    <div id="suggestions"></div>
+  </div>
+</header>
 
-<div id="throttleLabel" class="throttle-label">GAZ</div>
-<div id="throttleBar" class="throttle-bar">
-    <div id="throttleFill" class="throttle-fill"></div>
-    <div id="throttleThumb" class="throttle-thumb"></div>
-</div>
-
-<div class="container" id="mainContainer">
-    <div class="slider-wrapper">
-        <div id="startPanel" class="panel">
-            <button id="actionBtn">BAŞLAT</button>
-        </div>
-        
-        <div id="metricPanel" class="panel">
-            <div id="status">SİSTEM HAZIR</div>
-            <button id="stopBtn" class="stop-btn">DURDUR</button>
-        </div>
+<div class="main">
+  <div class="sidebar">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('results')" id="tab-results">Arama Sonuçları</div>
+      <div class="tab" onclick="switchTab('history')" id="tab-history">Son İzlenenler</div>
     </div>
+    <div class="results-container" id="results-pane">
+      <div id="results"></div>
+    </div>
+    <div class="results-container" id="history-pane" style="display: none;">
+      <div id="watch-history"></div>
+    </div>
+  </div>
+
+  <div class="player" id="player-container">
+    <iframe id="player" src="https://www.youtube-nocookie.com/embed/jfKfPfyJRdk?autoplay=1&playsinline=1&enablejsapi=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
 </div>
 
 <script>
-const canvas = document.getElementById("waveCanvas");
-const ctx = canvas.getContext("2d");
+const API_KEY = "YOUR_YOUTUBE_API_KEY"; // Kendi API anahtarınızı buraya yazın
 
-let currentSpeedForVisual = 0;
-let waveAngle = 0;
-let isEngineRunning = false;
-let waveScaleFactor = 0.0;
-let throttleValue = 0.0; 
-let isDraggingThrottle = false;
+let currentResults = [];
+let watchHistory = JSON.parse(localStorage.getItem("yt_watch_history")) || [];
+let searchHistory = JSON.parse(localStorage.getItem("yt_search_history")) || [];
 
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+function decodeHTMLEntities(text) {
+  const textArea = document.createElement('textarea');
+  textArea.innerHTML = text;
+  return textArea.value;
 }
-window.addEventListener("resize", resizeCanvas);
-resizeCanvas();
 
-function animateWaves() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.25)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+function switchTab(tabName) {
+  document.getElementById("tab-results").classList.remove("active");
+  document.getElementById("tab-history").classList.remove("active");
+  document.getElementById("results-pane").style.display = "none";
+  document.getElementById("history-pane").style.display = "none";
 
-    const cy = canvas.height / 2;
-    const speedFactor = isEngineRunning ? currentSpeedForVisual : 0;
-    
-    waveAngle += 0.025 + (speedFactor / 250);
-    ctx.lineWidth = 1.5;
+  if (tabName === 'results') {
+    document.getElementById("tab-results").classList.add("active");
+    document.getElementById("results-pane").style.display = "block";
+  } else {
+    document.getElementById("tab-history").classList.add("active");
+    document.getElementById("history-pane").style.display = "block";
+    renderWatchHistory();
+  }
+}
 
-    for (let w = 0; w < 3; w++) {
-        ctx.beginPath();
-        const alpha = 0.06 + ((0.18 + (w * 0.1)) * waveScaleFactor);
-        ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
-        
-        for (let x = 0; x < canvas.width; x += 10) {
-            const frequency = 0.004;
-            const baseAmplitude = 20 + (speedFactor * 0.15); 
-            const amplitude = baseAmplitude * waveScaleFactor;
-            
-            const y = cy + Math.sin(x * frequency + waveAngle + (w * 0.8)) * amplitude 
-                      * Math.cos(waveAngle * 0.3);
+async function searchVideos(customQuery) {
+  const queryInput = document.getElementById("query");
+  const suggestionsBox = document.getElementById("suggestions");
+  const q = customQuery || queryInput.value.trim();
 
-            if (x === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        }
-        ctx.stroke();
+  if (!q) return;
+
+  queryInput.value = q;
+  suggestionsBox.style.display = "none";
+  switchTab('results');
+
+  if (!searchHistory.includes(q)) {
+    searchHistory.unshift(q);
+    if (searchHistory.length > 10) searchHistory.pop();
+    localStorage.setItem("yt_search_history", JSON.stringify(searchHistory));
+  }
+
+  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&videoEmbeddable=true&maxResults=25&q=${encodeURIComponent(q)}&key=${API_KEY}`;
+
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+
+    if (!data.items || data.items.length === 0) {
+      alert("Oynatılabilir video bulunamadı.");
+      return;
     }
 
-    requestAnimationFrame(animateWaves);
-}
-animateWaves();
+    currentResults = data.items;
+    renderVideoList(currentResults, "results");
 
-let audioCtx = null;
-let engineBuffer = null; 
-let activeSource = null;
-let masterGain = null;
-let lowpassFilter = null;
-let metallicFilter = null;
-let metallicGain = null;
-let watchId = null;
-let keepAliveInterval = null;
-
-let lastLat = null;
-let lastLon = null;
-let lastTime = null;
-let gpsSpeed = 0;
-let smoothedSpeed = 0;
-
-const ENGINE_SOUND_FILE = "teslasound.mp3";
-
-async function loadEngineSound() {
-    if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        
-        masterGain = audioCtx.createGain();
-        masterGain.gain.value = 0.0; // Başlangıçta mutlak sessizlik
-        masterGain.connect(audioCtx.destination);
-
-        lowpassFilter = audioCtx.createBiquadFilter();
-        lowpassFilter.type = "lowpass";
-        lowpassFilter.frequency.value = 600;
-        lowpassFilter.connect(masterGain);
-
-        metallicFilter = audioCtx.createBiquadFilter();
-        metallicFilter.type = "bandpass";
-        metallicFilter.frequency.value = 2400;
-        metallicFilter.Q.value = 6.0;
-
-        metallicGain = audioCtx.createGain();
-        metallicGain.gain.value = 0.0;
-
-        metallicFilter.connect(metallicGain);
-        metallicGain.connect(masterGain);
+    if (currentResults.length > 0) {
+      playVideo(currentResults[0]);
     }
-
-    if (!engineBuffer) {
-        try {
-            const response = await fetch(ENGINE_SOUND_FILE);
-            const arrayBuffer = await response.arrayBuffer();
-            engineBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-        } catch(e) {
-            console.error("Tesla MP3 yüklenemedi:", e);
-        }
-    }
+  } catch (err) {
+    console.error(err);
+    alert("Bağlantı hatası oluştu.");
+  }
 }
 
-function distanceMeters(lat1, lon1, lat2, lon2){
-    const R = 6371000;
-    const dLat = (lat2-lat1) * Math.PI/180;
-    const dLon = (lon2-lon1) * Math.PI/180;
-    const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+function renderVideoList(items, containerId) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+
+  items.forEach(video => {
+    const videoId = video.id?.videoId || video.videoId;
+    const title = decodeHTMLEntities(video.snippet.title);
+    const channel = decodeHTMLEntities(video.snippet.channelTitle);
+    const thumb = video.snippet.thumbnails.medium.url;
+
+    const div = document.createElement("div");
+    div.className = "video-item";
+    div.innerHTML = `
+      <img src="${thumb}" alt="thumb">
+      <div class="video-info">
+        <div class="video-title"></div>
+        <div class="channel-title"></div>
+      </div>
+    `;
+
+    div.querySelector(".video-title").textContent = title;
+    div.querySelector(".channel-title").textContent = channel;
+
+    div.onclick = () => {
+      playVideo({ videoId, snippet: { title, channelTitle: channel, thumbnails: { medium: { url: thumb } } } });
+    };
+
+    container.appendChild(div);
+  });
 }
 
-// BMW ICONICSOUNDS: RÖLANTİDE SIFIR SES, HIZLANDIKÇA HACİM VE FREKANS KAZANAN MİMARİ
-function updateEngineAudio(speed) {
-    if (!audioCtx || !activeSource) return;
-    const now = audioCtx.currentTime;
+function playVideo(videoObj) {
+  const videoId = videoObj.videoId || videoObj.id?.videoId;
+  if (!videoId) return;
 
-    let rate = 0.75 + (speed / 140);
-    rate = Math.max(0.75, Math.min(1.85, rate));
+  const playerContainer = document.getElementById("player-container");
+  
+  // Sefirox mantığına benzer şekilde iframe her tıklamada DOM'a yeniden sıfırdan enjekte edilir.
+  // Bu sayede Tesla tarayıcısının hareket sensörü kilidi bypass edilir.
+  playerContainer.innerHTML = `
+    <iframe id="player" 
+      src="https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&playsinline=1&enablejsapi=1&controls=1" 
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+      allowfullscreen>
+    </iframe>
+  `;
 
+  watchHistory = watchHistory.filter(item => (item.videoId || item.id?.videoId) !== videoId);
+  watchHistory.unshift(videoObj);
+  if (watchHistory.length > 20) watchHistory.pop();
+  localStorage.setItem("yt_watch_history", JSON.stringify(watchHistory));
+}
+
+function renderWatchHistory() {
+  const container = document.getElementById("watch-history");
+  if (watchHistory.length === 0) {
+    container.innerHTML = `<div style="padding: 20px; color: #888; text-align: center; font-size: 14px;">Henüz izlenen video yok.</div>`;
+    return;
+  }
+  renderVideoList(watchHistory, "watch-history");
+}
+
+const queryInput = document.getElementById("query");
+const suggestionsBox = document.getElementById("suggestions");
+
+queryInput.addEventListener("focus", () => showSuggestionsDropdown(queryInput.value.trim()));
+queryInput.addEventListener("input", () => showSuggestionsDropdown(queryInput.value.trim()));
+
+async function showSuggestionsDropdown(q) {
+  suggestionsBox.innerHTML = "";
+  let hasContent = false;
+
+  const matchedHistory = searchHistory.filter(item => item.toLowerCase().includes(q.toLowerCase()));
+  if (matchedHistory.length > 0) {
+    hasContent = true;
+    const titleDiv = document.createElement("div");
+    titleDiv.className = "suggestion-section-title";
+    titleDiv.innerHTML = `<span>Son Aramalar</span>`;
+    suggestionsBox.appendChild(titleDiv);
+
+    matchedHistory.slice(0, 4).forEach(term => {
+      const div = document.createElement("div");
+      div.className = "suggestion";
+      div.innerHTML = `<span>🔍 ${term}</span>`;
+      div.onclick = () => searchVideos(term);
+      suggestionsBox.appendChild(div);
+    });
+  }
+
+  if (q.length >= 2) {
     try {
-        activeSource.playbackRate.cancelScheduledValues(now);
-        activeSource.playbackRate.setValueAtTime(activeSource.playbackRate.value, now);
-        activeSource.playbackRate.linearRampToValueAtTime(rate, now + 0.05);
-    } catch(e){}
+      const proxyUrl = "https://corsproxy.io/?";
+      const targetUrl = `https://suggestqueries.google.com/complete/search?client=firefox&ds=yt&q=${encodeURIComponent(q)}`;
+      const res = await fetch(proxyUrl + encodeURIComponent(targetUrl));
+      const data = await res.json();
 
-    let targetFreq = 500 + (speed * 30);
-    targetFreq = Math.max(500, Math.min(5000, targetFreq));
-    if(lowpassFilter) {
-        lowpassFilter.frequency.cancelScheduledValues(now);
-        lowpassFilter.frequency.setValueAtTime(lowpassFilter.frequency.value, now);
-        lowpassFilter.frequency.linearRampToValueAtTime(targetFreq, now + 0.05);
+      if (data[1] && data[1].length > 0) {
+        hasContent = true;
+        const liveTitleDiv = document.createElement("div");
+        liveTitleDiv.className = "suggestion-section-title";
+        liveTitleDiv.textContent = "Google Önerileri";
+        suggestionsBox.appendChild(liveTitleDiv);
+
+        data[1].slice(0, 4).forEach(item => {
+          const div = document.createElement("div");
+          div.className = "suggestion";
+          div.textContent = item;
+          div.onclick = () => searchVideos(item);
+          suggestionsBox.appendChild(div);
+        });
+      }
+    } catch (err) {
+      console.log("Öneri hatası", err);
     }
+  }
 
-    let metallicVolume = 0.0;
-    let metallicFreq = 2400;
-
-    if (speed > 80) {
-        let overSpeed = speed - 80;
-        metallicVolume = Math.min(0.85, overSpeed / 60); 
-        metallicFreq = 2400 + (overSpeed * 45); 
-    }
-
-    if(metallicGain && metallicFilter) {
-        metallicGain.gain.cancelScheduledValues(now);
-        metallicGain.gain.setValueAtTime(metallicGain.gain.value, now);
-        metallicGain.gain.linearRampToValueAtTime(metallicVolume, now + 0.08);
-
-        metallicFilter.frequency.cancelScheduledValues(now);
-        metallicFilter.frequency.setValueAtTime(metallicFilter.frequency.value, now);
-        metallicFilter.frequency.linearRampToValueAtTime(metallicFreq, now + 0.08);
-    }
-
-    // KRİTİK BMW MİMARİSİ: Hız 0 iken master ses 0 (Mutlak Sessizlik). Hızlandıkça ses yumuşakça açılır.
-    if(masterGain && isEngineRunning) {
-        let targetMasterGain = speed > 1 ? Math.min(0.8, 0.15 + (speed / 180)) : 0.0;
-        masterGain.gain.cancelScheduledValues(now);
-        masterGain.gain.setValueAtTime(masterGain.gain.value, now);
-        masterGain.gain.linearRampToValueAtTime(targetMasterGain, now + 0.1);
-    }
+  suggestionsBox.style.display = hasContent ? "block" : "none";
 }
 
-function startKeepAlivePulse() {
-    if (keepAliveInterval) clearInterval(keepAliveInterval);
-    keepAliveInterval = setInterval(() => {
-        if (audioCtx && audioCtx.state === 'suspended' && isEngineRunning) {
-            audioCtx.resume();
-        }
-    }, 3000);
-}
-
-document.addEventListener("visibilitychange", () => {
-    if (!document.hidden && audioCtx && audioCtx.state === 'suspended' && isEngineRunning) {
-        audioCtx.resume();
-    }
+queryInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    suggestionsBox.style.display = "none";
+    searchVideos();
+  }
 });
 
-function startSolidEngine() {
-    if (!engineBuffer || activeSource) return;
-    const now = audioCtx.currentTime;
-
-    activeSource = audioCtx.createBufferSource();
-    activeSource.buffer = engineBuffer;
-    activeSource.loop = true;
-
-    activeSource.connect(lowpassFilter);
-    activeSource.connect(metallicFilter);
-
-    activeSource.start(now);
-
-    if(masterGain) {
-        masterGain.gain.cancelScheduledValues(now);
-        masterGain.gain.setValueAtTime(0.0, now);
-    }
-
-    startKeepAlivePulse();
-}
-
-const throttleBar = document.getElementById("throttleBar");
-const throttleFill = document.getElementById("throttleFill");
-const throttleThumb = document.getElementById("throttleThumb");
-const throttleLabel = document.getElementById("throttleLabel");
-
-function updateThrottlePosition() {
-    throttleFill.style.height = `${throttleValue * 100}%`;
-    throttleThumb.style.bottom = `${throttleValue * 100}%`;
-}
-
-function handleThrottleMove(clientY) {
-    const rect = throttleBar.getBoundingClientRect();
-    let y = rect.bottom - clientY;
-    let val = y / rect.height;
-    if (val < 0) val = 0;
-    if (val > 1) val = 1;
-    throttleValue = val;
-    updateThrottlePosition();
-}
-
-throttleBar.addEventListener("mousedown", (e) => { isDraggingThrottle = true; handleThrottleMove(e.clientY); });
-window.addEventListener("mousemove", (e) => { if(isDraggingThrottle) handleThrottleMove(e.clientY); });
-window.addEventListener("mouseup", () => { isDraggingThrottle = false; });
-
-throttleBar.addEventListener("touchstart", (e) => { isDraggingThrottle = true; handleThrottleMove(e.touches[0].clientY); });
-window.addEventListener("touchmove", (e) => { if(isDraggingThrottle) handleThrottleMove(e.touches[0].clientY); });
-window.addEventListener("touchend", () => { isDraggingThrottle = false; });
-
-document.getElementById("actionBtn").onclick = async () => {
-    const btn = document.getElementById("actionBtn");
-    btn.innerText = "BAŞLATILIYOR...";
-    
-    document.getElementById("startPanel").classList.add("zoom-out");
-    document.getElementById("metricPanel").classList.add("zoom-in");
-    throttleBar.classList.add("active");
-    throttleLabel.classList.add("active");
-
-    await loadEngineSound();
-    
-    if(audioCtx.state === 'suspended') {
-        await audioCtx.resume();
-    }
-
-    isEngineRunning = true;
-    startSolidEngine();
-    
-    waveScaleFactor = 0.0;
-    const growInterval = setInterval(() => {
-        waveScaleFactor += 0.05;
-        if (waveScaleFactor >= 1.0) {
-            waveScaleFactor = 1.0;
-            clearInterval(growInterval);
-        }
-    }, 25);
-
-    watchId = navigator.geolocation.watchPosition(
-        pos => {
-            const lat = pos.coords.latitude;
-            const lon = pos.coords.longitude;
-            const now = Date.now();
-            let kmh = 0;
-
-            if(lastLat !== null){
-                const meters = distanceMeters(lastLat, lastLon, lat, lon);
-                const seconds = (now - lastTime) / 1000;
-                if(seconds > 0) kmh = (meters / seconds) * 3.6;
-            }
-
-            lastLat = lat; lastLon = lon; lastTime = now;
-            gpsSpeed = kmh;
-        },
-        err => {},
-        { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
-    );
-};
-
-function runSimulationLoop() {
-    if(isEngineRunning) {
-        if(!isDraggingThrottle && throttleValue > 0) {
-            throttleValue -= 0.05; 
-            if(throttleValue < 0) throttleValue = 0;
-            updateThrottlePosition();
-        }
-
-        let targetSpeed = 0;
-        if (throttleValue > 0 || isDraggingThrottle) {
-            targetSpeed = throttleValue * 200;
-        } else {
-            targetSpeed = gpsSpeed;
-        }
-
-        if (targetSpeed < smoothedSpeed) {
-            smoothedSpeed += (targetSpeed - smoothedSpeed) * 0.45; 
-        } else {
-            smoothedSpeed += (targetSpeed - smoothedSpeed) * 0.25; 
-        }
-
-        if(targetSpeed < 1 && throttleValue === 0) smoothedSpeed = 0;
-
-        const speed = Math.max(0, Math.round(smoothedSpeed));
-        currentSpeedForVisual = speed;
-
-        updateEngineAudio(speed);
-
-        let statusMode = "RÖLANTİ (SESSİZ)";
-        if (speed >= 1 && speed < 80) statusMode = "SÜRÜŞ";
-        else if (speed >= 80 && speed < 140) statusMode = "SPORT+METAL";
-        else if (speed >= 140) statusMode = "BOOST";
-
-        document.getElementById("status").innerText = `${statusMode} (${speed} KM/H)`;
-    }
-    requestAnimationFrame(runSimulationLoop);
-}
-runSimulationLoop();
-
-document.getElementById("stopBtn").onclick = () => {
-    if(!audioCtx) return;
-    isDraggingThrottle = false;
-    throttleValue = 0;
-    updateThrottlePosition();
-    throttleBar.classList.remove("active");
-    throttleLabel.classList.remove("active");
-
-    isEngineRunning = false;
-    if (keepAliveInterval) clearInterval(keepAliveInterval);
-
-    if(masterGain) {
-        try {
-            masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
-            masterGain.gain.setValueAtTime(masterGain.gain.value, audioCtx.currentTime);
-            masterGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
-        } catch(e){}
-    }
-
-    document.getElementById("metricPanel").classList.remove("zoom-in");
-    document.getElementById("startPanel").classList.remove("zoom-out");
-    document.getElementById("actionBtn").innerText = "BAŞLAT";
-
-    const decayInterval = setInterval(() => {
-        waveScaleFactor -= 0.05;
-        if (waveScaleFactor <= 0) {
-            waveScaleFactor = 0;
-            clearInterval(decayInterval);
-        }
-    }, 20);
-
-    setTimeout(() => {
-        if(activeSource) {
-            try { activeSource.stop(); } catch(e){}
-            activeSource = null;
-        }
-
-        if(watchId !== null) {
-            navigator.geolocation.clearWatch(watchId);
-            watchId = null;
-        }
-
-        lastLat = null;
-        lastLon = null;
-        lastTime = null;
-        gpsSpeed = 0;
-        smoothedSpeed = 0;
-        currentSpeedForVisual = 0;
-
-        document.getElementById("status").innerText = "SİSTEM HAZIR";
-    }, 550);
-};
+document.addEventListener("click", e => {
+  if (!suggestionsBox.contains(e.target) && e.target !== queryInput) {
+    suggestionsBox.style.display = "none";
+  }
+});
 </script>
 
 </body>
